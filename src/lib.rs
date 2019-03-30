@@ -114,6 +114,27 @@ impl Universe {
     pub fn cells(&self) -> *const u32 {
         self.cells.as_slice().as_ptr()
     }
+
+    /// Set the width of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_1| Cell::Dead).collect();
+    }
+
+    /// Set the height of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_height(&mut self, height: u32) {
+        let size = (self.width * height) as usize;
+        let mut cells = FixedBitSet::with_capacity(size);
+        self.height = height;
+        for i in 0..self.width * height {
+            cells.set(i as usize, false);
+        }
+        self.cells = cells;
+    }
 }
 
 
