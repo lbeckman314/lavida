@@ -1,8 +1,9 @@
 mod utils;
 extern crate js_sys;
+extern crate fixedbitset;
+use fixedbitset::FixedBitSet;
 
 use wasm_bindgen::prelude::*;
-use std::fmt;
 
 cfg_if::cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -30,7 +31,7 @@ pub enum Cell {
 pub struct Universe {
     width: u32,
     height: u32,
-    cells: Vec<Cell>,
+    cells: FixedBitSet,
 }
 
 // Public methods, exported to JavaScript.
@@ -44,25 +45,22 @@ impl Universe {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
-
-                let next_cell = match (cell, live_neighbors) {
+                next.set(idx, match (cell, live_neighbors) {
                     // Rule 1: Any live cell with fewer than two neighbors
                     // dies, as if caused by underpopulation.
-                    (Cell::Alive, x) if x < 2 => Cell::Dead,
+                    (true, x) if x < 2 => false,
                     // Rule 2: Any live cell with two or three live neighbors
                     // lives on to the next generations
-                    (Cell::Alive, 2) | (Cell::Alive, 3) => Cell::Alive,
+                    (true, 2) | (true, 3) => true,
                     // Rule 3: Any live cell with more than three live
                     // neighbors dies, as if by overpopulation
-                    (Cell::Alive, x) if x > 3 => Cell::Dead,
+                    (true, x) if x > 3 => false,
                     // Rule 4 :: Any dead cells with exactly three live nighbors
                     // becomes a live cell, as if by reproduction.
-                    (Cell::Dead, 3) => Cell::Alive,
+                    (false, 3) => true,
                     // All other cells remain in the same state.
-                    (otherwise, _) => otherwise,
-                };
-
-                next[idx] = next_cell;
+                    (otherwise, _) => otherwise
+                });
             }
         }
 
@@ -96,17 +94,13 @@ impl Universe {
         let size = (width * height) as usize;
 
         // default, random, space_ship
-        let cells = create_cells("random", size, width as usize);
+        let cells = create_cells("space_ship", size, width as usize);
 
         Universe {
             width,
             height,
             cells,
         }
-    }
-
-    pub fn render(&self) -> String {
-        self.to_string()
     }
 
     pub fn width(&self) -> u32 {
@@ -117,27 +111,14 @@ impl Universe {
         self.height
     }
 
-    pub fn cells(&self) -> *const Cell {
-        self.cells.as_ptr()
+    pub fn cells(&self) -> *const u32 {
+        self.cells.as_slice().as_ptr()
     }
 }
 
 
-impl fmt::Display for Universe {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
-            for &cell in line {
-                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
-                write!(f, "{}", symbol)?;
-            }
-            write!(f, "\n")?;
-        }
 
-        Ok(())
-    }
-}
-
-fn create_cells(cell_type: &str, size: usize, width: usize) -> Vec<Cell> {
+fn create_cells(cell_type: &str, size: usize, width: usize) -> FixedBitSet {
     match cell_type {
         "default" => return default(size),
         "space_ship" => return space_ship(size, width),
@@ -146,43 +127,39 @@ fn create_cells(cell_type: &str, size: usize, width: usize) -> Vec<Cell> {
     }
 }
 
-fn default(size: usize) -> Vec<Cell> {
-    let cells: Vec<Cell> = (0..size).map(|i| {
-        if i % 2 == 0 || i % 7 == 0 {
-            Cell::Alive
-        } else {
-            Cell::Dead
-        }
-    }).collect();
+fn default(size: usize) -> FixedBitSet {
+    let mut cells = FixedBitSet::with_capacity(size);
+    for i in 0..size {
+        cells.set(i, i % 2 == 0 || i % 7 == 0);
+    }
 
     return cells;
 }
 
-fn space_ship(size: usize, width: usize) -> Vec<Cell> {
-    let mut cells = Vec::with_capacity(size);
-    for _i in 0..size {
-        cells.push(Cell::Dead);
+fn space_ship(size: usize, width: usize) -> FixedBitSet {
+    let mut cells = FixedBitSet::with_capacity(size);
+    for i in 0..size {
+        cells.set(i, false);
     }
 
-    cells[1 + width as usize * 0] = Cell::Alive;
-    cells[2 + width as usize * 1] = Cell::Alive;
+    cells.set(1 + width as usize * 0, true);
+    cells.set(2 + width as usize * 1, true);
     for i in 0..3 {
-        cells[i + width as usize * 2] = Cell::Alive;
+        cells.set(i + width as usize * 2, true);
     }
 
     return cells;
 }
 
-fn random(size: usize) -> Vec<Cell> {
-    let mut cells = Vec::with_capacity(size);
-    for _i in 0..size {
+fn random(size: usize) -> FixedBitSet {
+    let mut cells = FixedBitSet::with_capacity(size);
+    for i in 0..size {
         if js_sys::Math::random() < 0.5 {
-            cells.push(Cell::Alive);
+            cells.set(i, true);
         } else {
-            cells.push(Cell::Dead);
+            cells.set(i, false);
         }
     }
 
     return cells;
 }
-
