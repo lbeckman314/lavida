@@ -1,8 +1,16 @@
 mod utils;
 extern crate js_sys;
+extern crate web_sys;
 
 use wasm_bindgen::prelude::*;
 use std::fmt;
+
+// A macro to provide 'println!(..)'-style syntac for 'console.log' logging.
+macro_rules! log{
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 cfg_if::cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -44,6 +52,17 @@ impl Universe {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
+                /*
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
+                );
+                */
+
+                let initial_state = cell;
 
                 let next_cell = match (cell, live_neighbors) {
                     // Rule 1: Any live cell with fewer than two neighbors
@@ -61,6 +80,14 @@ impl Universe {
                     // All other cells remain in the same state.
                     (otherwise, _) => otherwise,
                 };
+
+                // logging that records the row and column of each cell
+                // that transitioned states from live to dead or vice versa.
+                if initial_state != next_cell {
+                    log!("trans cell: row: {}, col: {}, now {:?}", row, col, next_cell);
+                }
+
+                // log!("    it becomes {:?}", next_cell);
 
                 next[idx] = next_cell;
             }
@@ -91,6 +118,8 @@ impl Universe {
     }
 
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
         let size = (width * height) as usize;
@@ -216,5 +245,3 @@ fn random(size: usize) -> Vec<Cell> {
 
     return cells;
 }
-
-
