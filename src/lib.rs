@@ -1,6 +1,6 @@
 mod utils;
+extern crate js_sys;
 
-use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
 use std::fmt;
 
@@ -52,7 +52,7 @@ impl Universe {
                     // Rule 2: Any live cell with two or three live neighbors
                     // lives on to the next generations
                     (Cell::Alive, 2) | (Cell::Alive, 3) => Cell::Alive,
-                    // Rule 3: Any live cell with more than three live 
+                    // Rule 3: Any live cell with more than three live
                     // neighbors dies, as if by overpopulation
                     (Cell::Alive, x) if x > 3 => Cell::Dead,
                     // Rule 4 :: Any dead cells with exactly three live nighbors
@@ -93,14 +93,10 @@ impl Universe {
     pub fn new() -> Universe {
         let width = 64;
         let height = 64;
+        let size = (width * height) as usize;
 
-        let cells = (0..width * height).map(|i| {
-            if i % 2 == 0 || i % 7 == 0 {
-                Cell::Alive
-            } else {
-                Cell::Dead
-            }
-        }).collect();
+        // default, random, space_ship
+        let cells = create_cells("random", size, width as usize);
 
         Universe {
             width,
@@ -112,7 +108,20 @@ impl Universe {
     pub fn render(&self) -> String {
         self.to_string()
     }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
+    }
 }
+
 
 impl fmt::Display for Universe {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -127,3 +136,53 @@ impl fmt::Display for Universe {
         Ok(())
     }
 }
+
+fn create_cells(cell_type: &str, size: usize, width: usize) -> Vec<Cell> {
+    match cell_type {
+        "default" => return default(size),
+        "space_ship" => return space_ship(size, width),
+        "random" => return random(size),
+        _ => panic!("Unknown cell type."),
+    }
+}
+
+fn default(size: usize) -> Vec<Cell> {
+    let cells: Vec<Cell> = (0..size).map(|i| {
+        if i % 2 == 0 || i % 7 == 0 {
+            Cell::Alive
+        } else {
+            Cell::Dead
+        }
+    }).collect();
+
+    return cells;
+}
+
+fn space_ship(size: usize, width: usize) -> Vec<Cell> {
+    let mut cells = Vec::with_capacity(size);
+    for _i in 0..size {
+        cells.push(Cell::Dead);
+    }
+
+    cells[1 + width as usize * 0] = Cell::Alive;
+    cells[2 + width as usize * 1] = Cell::Alive;
+    for i in 0..3 {
+        cells[i + width as usize * 2] = Cell::Alive;
+    }
+
+    return cells;
+}
+
+fn random(size: usize) -> Vec<Cell> {
+    let mut cells = Vec::with_capacity(size);
+    for _i in 0..size {
+        if js_sys::Math::random() < 0.5 {
+            cells.push(Cell::Alive);
+        } else {
+            cells.push(Cell::Dead);
+        }
+    }
+
+    return cells;
+}
+
