@@ -190,7 +190,7 @@ impl Universe {
         let size = (width * height) as usize;
 
         // default, random, space_ship
-        let cells = create_cells("space_ship", size, width as usize);
+        let cells = create_cells("random", size, width as usize);
 
         Universe {
             width,
@@ -237,6 +237,12 @@ impl Universe {
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
         let idx = self.get_index(row, column);
         //self.cells[idx].toggle();
+        if self.cells[idx] == false {
+            self.cells.set(idx, true);
+        }
+        else if self.cells[idx] == true {
+            self.cells.set(idx, false);
+        }
     }
 
     pub fn reset(&mut self) {
