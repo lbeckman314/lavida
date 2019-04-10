@@ -1,8 +1,8 @@
 // Import the WebAssembly memory at the top of the file.
-import { memory } from "lavida/lavida_bg";
-import { Universe, Cell } from "lavida";
+import { memory } from "convida/convida_bg";
+import { Universe, Cell } from "convida";
 
-const CELL_SIZE = 20; // px
+const CELL_SIZE = 10; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
@@ -31,6 +31,8 @@ const isPaused = () => {
 };
 
 const playPauseButton = document.getElementById("play-pause");
+const pre = document.getElementById("pre");
+
 
 const play = () => {
     playPauseButton.textContent = "⏸";
@@ -68,7 +70,46 @@ clearButton.addEventListener("click", event => {
     drawCells();
 })
 
+const step = document.getElementById("step");
+
+step.addEventListener("click", event => {
+    universe.tick();
+    drawGrid();
+    drawCells();
+
+    animationId = requestAnimationFrame(mynull);
+    pre.textContent = universe.render();
+    console.log(pre.textContent);
+})
+
+const mynull = () => {
+    return 0;
+};
+
 canvas.addEventListener("click", event => {
+    let index = idx(canvas);
+    let row = index.row;
+    let col = index.col;
+
+    if (event.ctrlKey) {
+        console.log("ctrl");
+        universe.glider(row, col);
+    }
+
+    else if (event.shiftKey) {
+        console.log("shift");
+        universe.pulsar(row, col);
+    }
+
+    else {
+        universe.toggle_cell(row, col);
+    }
+
+    drawGrid();
+    drawCells();
+});
+
+function idx(canvas) {
     const boundingRect = canvas.getBoundingClientRect();
 
     const scaleX = canvas.width / boundingRect.width;
@@ -80,25 +121,27 @@ canvas.addEventListener("click", event => {
     const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-    universe.toggle_cell(row, col);
-
-    drawGrid();
-    drawCells();
-});
+    return {
+        row: row,
+        col: col
+    };
+}
 
 
 // The result of 'requestAnimationFrame' is assigned to 'animationId'.
 const renderLoop = () => {
     //debugger;
     fps.render();
-    for (let i = 0; i < 9; i++) {
+    //for (let i = 0; i < 9; i++) {
         universe.tick();
-    }
+    //}
 
     drawGrid();
     drawCells();
 
     animationId = requestAnimationFrame(renderLoop);
+
+    pre.textContent = universe.render();
 };
 
 const drawGrid = () => {

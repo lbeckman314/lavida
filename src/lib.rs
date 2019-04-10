@@ -186,8 +186,23 @@ impl Universe {
     pub fn new() -> Universe {
         utils::set_panic_hook();
 
-        let width = 128;
-        let height = 128;
+        let width = 64;
+        let height = 64;
+        let size = (width * height) as usize;
+
+        // default, random, space_ship
+        let cells = create_cells("random", size, width as usize);
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    pub fn set_size(&mut self, width: u32, height: u32) -> Universe {
+        self.width = width;
+        self.height = height;
         let size = (width * height) as usize;
 
         // default, random, space_ship
@@ -248,11 +263,18 @@ impl Universe {
         self.cells = (0..self.width * self.height).map(|_1| Cell::Dead).collect();
     }
 
-    pub fn glider(&mut self) {
+    pub fn glider(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
 
+        self.cells[1 + column as usize + self.width as usize * (0 + row) as usize] = Cell::Alive;
+        self.cells[2 + column as usize + self.width as usize * (1 + row) as usize] = Cell::Alive;
+        for i in 0..3 {
+            self.cells[i + column as usize + self.width as usize * (2 + row) as usize] = Cell::Alive;
+        }
     }
 
-    pub fn pulsar(&mut self) {
+    pub fn pulsar(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
 
     }
 }
@@ -293,6 +315,10 @@ impl Cell {
             Cell::Dead => Cell::Alive,
             Cell::Alive => Cell::Dead,
         };
+    }
+
+    fn birth(&mut self) {
+        *self = Cell::Alive;
     }
 }
 
