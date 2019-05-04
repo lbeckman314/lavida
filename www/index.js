@@ -8,7 +8,8 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
 //Construct the universe, and get its width and height.
-const universe = Universe.new();
+const universe = Universe.new(100, 100);
+//universe.set_size(100, 100);
 const width = universe.width();
 const height = universe.height();
 
@@ -132,9 +133,9 @@ function idx(canvas) {
 const renderLoop = () => {
     //debugger;
     fps.render();
-    //for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 9; i++) {
         universe.tick();
-    //}
+    }
 
     drawGrid();
     drawCells();
