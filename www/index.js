@@ -1,6 +1,8 @@
 // Import the WebAssembly memory at the top of the file.
+import { memory } from "convida/convida_bg";
+import { Universe, Cell } from "convida";
 
-const CELL_SIZE = 20; // px
+const CELL_SIZE = 10; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
@@ -29,6 +31,8 @@ const isPaused = () => {
 };
 
 const playPauseButton = document.getElementById("play-pause");
+const pre = document.getElementById("pre");
+
 
 const play = () => {
     playPauseButton.textContent = "⏸";
@@ -65,6 +69,22 @@ clearButton.addEventListener("click", event => {
     drawGrid();
     drawCells();
 })
+
+const step = document.getElementById("step");
+
+step.addEventListener("click", event => {
+    universe.tick();
+    drawGrid();
+    drawCells();
+
+    animationId = requestAnimationFrame(mynull);
+    pre.textContent = universe.render();
+    console.log(pre.textContent);
+})
+
+const mynull = () => {
+    return 0;
+};
 
 canvas.addEventListener("click", event => {
     let index = idx(canvas);
@@ -113,14 +133,16 @@ function idx(canvas) {
 const renderLoop = () => {
     //debugger;
     fps.render();
-    for (let i = 0; i < 9; i++) {
+    //for (let i = 0; i < 9; i++) {
         universe.tick();
-    }
+    //}
 
     drawGrid();
     drawCells();
 
     animationId = requestAnimationFrame(renderLoop);
+
+    pre.textContent = universe.render();
 };
 
 const drawGrid = () => {

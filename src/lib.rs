@@ -186,8 +186,23 @@ impl Universe {
     pub fn new() -> Universe {
         utils::set_panic_hook();
 
-        let width = 128;
-        let height = 128;
+        let width = 64;
+        let height = 64;
+        let size = (width * height) as usize;
+
+        // default, random, space_ship
+        let cells = create_cells("random", size, width as usize);
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    pub fn set_size(&mut self, width: u32, height: u32) -> Universe {
+        self.width = width;
+        self.height = height;
         let size = (width * height) as usize;
 
         // default, random, space_ship
