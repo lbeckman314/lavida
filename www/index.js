@@ -1,6 +1,4 @@
 // Import the WebAssembly memory at the top of the file.
-import { memory } from "lavida/lavida_bg";
-import { Universe, Cell } from "lavida";
 
 const CELL_SIZE = 20; // px
 const GRID_COLOR = "#CCCCCC";
@@ -69,6 +67,29 @@ clearButton.addEventListener("click", event => {
 })
 
 canvas.addEventListener("click", event => {
+    let index = idx(canvas);
+    let row = index.row;
+    let col = index.col;
+
+    if (event.ctrlKey) {
+        console.log("ctrl");
+        universe.glider(row, col);
+    }
+
+    else if (event.shiftKey) {
+        console.log("shift");
+        universe.pulsar(row, col);
+    }
+
+    else {
+        universe.toggle_cell(row, col);
+    }
+
+    drawGrid();
+    drawCells();
+});
+
+function idx(canvas) {
     const boundingRect = canvas.getBoundingClientRect();
 
     const scaleX = canvas.width / boundingRect.width;
@@ -80,12 +101,13 @@ canvas.addEventListener("click", event => {
     const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-    universe.toggle_cell(row, col);
+    return {
+        row: row,
+        col: col
+    };
+}
 
-    drawGrid();
-    drawCells();
-});
-
+//console.log("Waiting for clients...");
 
 // The result of 'requestAnimationFrame' is assigned to 'animationId'.
 const renderLoop = () => {

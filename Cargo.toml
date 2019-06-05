@@ -1,7 +1,7 @@
 [package]
-name = "lavida"
+name = "convida"
 version = "0.1.0"
-authors = ["lbeckman314 <lbeckman314@gmail.com>"]
+authors = ["lbeckman314 <liam@liambeckman.com>"]
 edition = "2018"
 
 [lib]
