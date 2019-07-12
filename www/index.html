@@ -5,14 +5,30 @@
     <title>Hello wasm-pack!</title>
   </head>
   <body>
-      <button id="play-pause"></button>
-      <button id="step">Step</button>
-      <button id="reset">Reset</button>
-      <button id="clear">Clear</button>
-      <div id="fps"></div>
+      <button id="toggle-settings">@</button>
+      <div id="settings" class="hidden">
+          <div id="buttons">
+              <button id="play-pause"></button>
+              <button id="step">Step</button>
+              <button id="reset">Reset</button>
+              <button id="clear">Clear</button>
+              <label for="theme">Theme:</label>
+              <select id="theme">
+                  <option value="default">Default</option>
+                  <option value="random">Random</option>
+                  <option value="retro">Retro</option>
+              </select>
+          </div>
+          <div id="fps"></div>
+      </div>
     <canvas id="game-of-life-canvas"></canvas>
     <pre id="pre"></pre>
     <script src="./bootstrap.js"></script>
+    <script>
+        document.getElementById('toggle-settings').addEventListener('click', () => {
+            document.getElementById('settings').classList.toggle('hidden');
+        })
+    </script>
   </body>
 </html>
 
@@ -27,6 +43,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-color: black;
+    color: snow;
+}
+
+#game-of-life-canvas {
+    border: 1px solid gray;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #fps {
@@ -34,7 +58,23 @@ body {
     font-family: monospace;
 }
 
+#buttons {
+    display: grid;
+}
+
 #pre {
     height: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#toggle-settings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: snow;
+    background-color: black;
 }
 </style>

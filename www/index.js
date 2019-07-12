@@ -3,9 +3,9 @@ import { memory } from "convida/convida_bg";
 import { Universe, Cell } from "convida";
 
 const CELL_SIZE = 10; // px
-const GRID_COLOR = "#CCCCCC";
-const DEAD_COLOR = "#FFFFFF";
-const ALIVE_COLOR = "#000000";
+const GRID_COLOR = "#000000";
+const DEAD_COLOR = "#000000";
+const ALIVE_COLOR = "#FFFFFF";
 
 //Construct the universe, and get its width and height.
 const universe = Universe.new();
@@ -17,8 +17,16 @@ const height = universe.height();
 const canvas = document.getElementById("game-of-life-canvas");
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
+const pops = ["#DB37C4","#ED68D9","#49CCD4","#678CFA","#4635F7"];
+let theme = 'random';
 
 const ctx = canvas.getContext("2d");
+const themeSelect = document.getElementById('theme');
+console.log(themeSelect.value);
+themeSelect.addEventListener("change", event => {
+    console.log(themeSelect.value);
+    theme = themeSelect.value;
+});
 
 if (ctx === null) {
     alert("unable to initialize WebGL.");
@@ -78,8 +86,6 @@ step.addEventListener("click", event => {
     drawCells();
 
     animationId = requestAnimationFrame(mynull);
-    pre.textContent = universe.render();
-    console.log(pre.textContent);
 })
 
 const mynull = () => {
@@ -133,16 +139,14 @@ function idx(canvas) {
 const renderLoop = () => {
     //debugger;
     fps.render();
-    //for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 9; i++) {
         universe.tick();
-    //}
+    }
 
     drawGrid();
     drawCells();
 
     animationId = requestAnimationFrame(renderLoop);
-
-    pre.textContent = universe.render();
 };
 
 const drawGrid = () => {
@@ -182,6 +186,13 @@ const drawCells = () => {
                 continue;
             }
 
+            if (theme == 'random') {
+                // https://stackoverflow.com/questions/1152024/best-way-to-generate-a-random-color-in-javascript/1152508
+                ctx.fillStyle = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+            }
+            else if (theme == 'retro') {
+                ctx.fillStyle = pops[Math.floor(Math.random() * pops.length)];
+            }
             ctx.fillRect(
                 col * (CELL_SIZE + 1) + 1,
                 row * (CELL_SIZE + 1) + 1,

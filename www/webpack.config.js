@@ -11,18 +11,4 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin(['index.html'])
   ],
-      mode: "production",
-  module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        exclude: /(node_modules)/,
-        loader: "babel-loader",
-        query: {
-          presets: ["@babel/preset-env"]
-        }
-      }
-    ]
-  }
 };
-
