@@ -364,7 +364,7 @@ fn random(size: usize) -> Vec<Cell> {
         if js_sys::Math::random() < 0.5 {
             cells.push(Cell::Alive);
         } else {
-          cells.push(Cell::Dead);
+            cells.push(Cell::Dead);
         }
     }
 

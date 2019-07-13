@@ -15,16 +15,24 @@
               <label for="theme">Theme:</label>
               <select id="theme">
                   <option value="default">Default</option>
-                  <option value="random">Random</option>
+                  <option value="random" selected>Random</option>
                   <option value="retro">Retro</option>
               </select>
+              <label for="speed">Speed:</label>
+              <input id="speed" type="number" value=9 min=0></input>
           </div>
+          <a href="https://github.com/lbeckman314/convida">About/Source Code</a>
           <div id="fps"></div>
       </div>
     <canvas id="game-of-life-canvas"></canvas>
     <pre id="pre"></pre>
     <script src="./bootstrap.js"></script>
     <script>
+        document.addEventListener('keydown', event => {
+            if (event.key === '@') {
+                document.getElementById('settings').classList.toggle('hidden');
+            }
+        })
         document.getElementById('toggle-settings').addEventListener('click', () => {
             document.getElementById('settings').classList.toggle('hidden');
         })
@@ -60,6 +68,7 @@ body {
 
 #buttons {
     display: grid;
+    padding-bottom: 10%;
 }
 
 #pre {
@@ -76,5 +85,14 @@ body {
     left: 0;
     color: snow;
     background-color: black;
+}
+
+#settings {
+    position: absolute;
+    left: 0;
+}
+
+a {
+    color: lightblue;
 }
 </style>

@@ -19,11 +19,16 @@ canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
 const pops = ["#DB37C4","#ED68D9","#49CCD4","#678CFA","#4635F7"];
 let theme = 'random';
+const speed = document.getElementById('speed');
+let TICKS_PER_RENDER = speed.value || 9;
+speed.addEventListener('change', () => {
+    TICKS_PER_RENDER = speed.value;
+});
 
 const ctx = canvas.getContext("2d");
 const themeSelect = document.getElementById('theme');
 console.log(themeSelect.value);
-themeSelect.addEventListener("change", event => {
+themeSelect.addEventListener('change', event => {
     console.log(themeSelect.value);
     theme = themeSelect.value;
 });
@@ -133,13 +138,11 @@ function idx(canvas) {
     };
 }
 
-//console.log("Waiting for clients...");
-
 // The result of 'requestAnimationFrame' is assigned to 'animationId'.
 const renderLoop = () => {
     //debugger;
     fps.render();
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < TICKS_PER_RENDER; i++) {
         universe.tick();
     }
 
