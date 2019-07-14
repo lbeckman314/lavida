@@ -37,12 +37,12 @@ to build the Rust code in `src/lib.rs` to the `pkg` directory.
 
 ## Alternatives
 
-http://golly.sourceforge.net/
-https://copy.sh/life/
+- http://golly.sourceforge.net/
+- https://copy.sh/life/
 
 ## Improvements on the Tutorial
 
-Introduce an <input type="range"> widget to control how many ticks occur per animation frame.
-Add a button that resets the universe to a random initial state when clicked. Another button that resets the universe to all dead cells.
-On Ctrl + Click, insert a glider centered on the target cell. On Shift + Click, insert a pulsar.
+- Introduce an `<input type="range">` widget to control how many ticks occur per animation frame.
+- Add a button that resets the universe to a random initial state when clicked. Another button that resets the universe to all dead cells.
+- On Ctrl + Click, insert a glider centered on the target cell. On Shift + Click, insert a pulsar.
 

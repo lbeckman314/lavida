@@ -1,12 +1,9 @@
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8181 });
+var express = require('express');
+var app = express();
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-  });
+// Set the MIME type explicitly
+express.static.mime.define({'application/wasm': ['wasm']});
 
-  ws.send('something');
-});
+app.use(express.static('./dist'));
 
-
+app.listen(8000);
