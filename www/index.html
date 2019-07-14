@@ -18,11 +18,15 @@
                   <option value="random" selected>Random</option>
                   <option value="retro">Retro</option>
               </select>
-              <label for="speed">Speed:</label>
-              <input id="speed" type="number" value=9 min=0></input>
+              <label for="delay">Delay (ms):</label>
+              <input id="delay" type="number" value=100 min=0 step=100></input>
+              <label for="ticks">Ticks per Render:</label>
+              <input id="ticks" type="number" value=1 min=0></input>
           </div>
-          <a href="https://github.com/lbeckman314/convida">About/Source Code</a>
           <div id="fps"></div>
+          <a href="https://github.com/lbeckman314/convida">About/Source Code</a>
+          <p>Ctrl + Left-Click :: glider</p>
+          <p>Shift + Left-Click :: pulsar</p>
       </div>
     <canvas id="game-of-life-canvas"></canvas>
     <pre id="pre"></pre>
@@ -68,7 +72,11 @@ body {
 
 #buttons {
     display: grid;
-    padding-bottom: 10%;
+}
+
+#buttons, #fps, input, select {
+    margin-bottom: 10%;
+    border-bottom: 1px dashed grey;
 }
 
 #pre {

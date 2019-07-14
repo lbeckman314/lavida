@@ -19,10 +19,17 @@ canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
 const pops = ["#DB37C4","#ED68D9","#49CCD4","#678CFA","#4635F7"];
 let theme = 'random';
-const speed = document.getElementById('speed');
-let TICKS_PER_RENDER = speed.value || 9;
-speed.addEventListener('change', () => {
-    TICKS_PER_RENDER = speed.value;
+
+const delay = document.getElementById('delay');
+let DELAY = delay.value || 100;
+delay.addEventListener('change', () => {
+    DELAY = delay.value;
+});
+
+const ticks = document.getElementById('ticks');
+let TICKS_PER_RENDER = ticks.value || 1;
+ticks.addEventListener('change', () => {
+    TICKS_PER_RENDER = ticks.value;
 });
 
 const ctx = canvas.getContext("2d");
@@ -31,7 +38,11 @@ console.log(themeSelect.value);
 themeSelect.addEventListener('change', event => {
     console.log(themeSelect.value);
     theme = themeSelect.value;
+    drawGrid();
+    drawCells();
 });
+
+let con = 1;
 
 if (ctx === null) {
     alert("unable to initialize WebGL.");
@@ -48,6 +59,7 @@ const pre = document.getElementById("pre");
 
 
 const play = () => {
+    con = 1;
     playPauseButton.textContent = "⏸";
     renderLoop();
 }
@@ -56,9 +68,11 @@ const pause = () => {
     playPauseButton.textContent = "▶";
     cancelAnimationFrame(animationId);
     animationId = null;
+    con = 0;
 }
 
 playPauseButton.addEventListener("click", event => {
+    console.log('isPaused():', isPaused());
     if (isPaused()) {
         play();
     } else {
@@ -140,7 +154,6 @@ function idx(canvas) {
 
 // The result of 'requestAnimationFrame' is assigned to 'animationId'.
 const renderLoop = () => {
-    //debugger;
     fps.render();
     for (let i = 0; i < TICKS_PER_RENDER; i++) {
         universe.tick();
@@ -149,8 +162,27 @@ const renderLoop = () => {
     drawGrid();
     drawCells();
 
-    animationId = requestAnimationFrame(renderLoop);
+    animationId = requestAnimationFrame(wait);
 };
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+const wait = async () => {
+    animationId = null;
+    if (con == 1) {
+        setTimeout(renderLoop, DELAY);
+    }
+    else {
+        while(con == 0) {
+            await sleep(100);
+        }
+        renderLoop();
+    }
+}
+
 
 const drawGrid = () => {
     ctx.beginPath();
