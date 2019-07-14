@@ -36,6 +36,27 @@ wasm-pack build
 
 to build the Rust code in `src/lib.rs` to the `pkg` directory.
 
+### Source Descriptions
+
+| File/Directory                         | Description                                      |
+|----------------------------------------|--------------------------------------------------|
+| [Cargo.lock](./Cargo.lock)             | dependencies.                                    |
+| [Cargo.toml](./Cargo.toml)             | dependencies.                                    |
+| [README.md](./README.md)               | this README file.                                |
+| [benches](./benches)                   | used in optimizing runtime.                      |
+| [convida-alt.png](./convida-alt.png)   | alternative logo image.                          |
+| [convida.png](./convida.png)           | logo image.                                      |
+| [convida.xcf](./convida.xcf)           | GIMP logo file.                                  |
+| [cross-compile.sh](./cross-compile.sh) | beta cross compiling script.                     |
+| [perf.data](./perf.data)               | used in optimizing runtime.                      |
+| [pkg](./pkg)                           | destination directory for compiled rust code.    |
+| [screenshot.png](./screenshot.png)     | screenshot image.                                |
+| [src](./src)                           | main source files.                               |
+| [target](./target)                     | Rust's target directory.                         |
+| [tests](./tests)                       | used in testing ticks and created cell patterns. |
+| [www](./www)                           | directory for web client.                        |
+
+
 ## Alternatives
 
 - http://golly.sourceforge.net/
