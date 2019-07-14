@@ -5,3 +5,4 @@ Cargo.lock
 bin/
 wasm-pack.log
 *.xcf
+convida.tar.gz
