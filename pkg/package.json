@@ -1,0 +1,15 @@
+{
+  "name": "convida",
+  "collaborators": [
+    "lbeckman314 <liam@liambeckman.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "convida_bg.wasm",
+    "convida.js",
+    "convida.d.ts"
+  ],
+  "module": "convida.js",
+  "types": "convida.d.ts",
+  "sideEffects": "false"
+}

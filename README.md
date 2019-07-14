@@ -4,12 +4,13 @@
 
 An implementation of [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) based on this [tutorial](https://rustwasm.github.io/docs/book/game-of-life/introduction.html).
 
-## Release
+## Quick Start
 
 To start the server, enter:
 
 ```
-cd www
+git clone https://github.com/lbeckman314/convida
+cd convida/www
 npm install
 npm run start
 ```
@@ -45,4 +46,10 @@ to build the Rust code in `src/lib.rs` to the `pkg` directory.
 - Introduce an `<input type="range">` widget to control how many ticks occur per animation frame.
 - Add a button that resets the universe to a random initial state when clicked. Another button that resets the universe to all dead cells.
 - On Ctrl + Click, insert a glider centered on the target cell. On Shift + Click, insert a pulsar.
+- At this point, the next lowest hanging fruit for speeding up Universe::tick is removing the allocation and free. Implement double buffering of cells, where the Universe maintains two vectors, never frees either of them, and never allocates new buffers in tick.
 
+## TODO
+
+- Implement the alternative, delta-based design from the "Implementing Life" chapter, where the Rust code returns a list of cells that changed states to JavaScript. Does this make rendering to `<canvas>` faster? Can you implement this design without allocating a new list of deltas on every tick?
+- As our profiling has shown us, 2D `<canvas>` rendering is not particularly fast. Replace the 2D canvas renderer with a WebGL renderer. How much faster is the WebGL version? How large can you make the universe before WebGL rendering is a bottleneck?
+- We only ever instantiate a single Universe, so rather than providing a constructor, we can export operations that manipulate a single static mut global instance. If this global instance also uses the double buffering technique discussed in earlier chapters, we can make those buffers also be static mut globals. This removes all dynamic allocation from our Game of Life implementation, and we can make it a `#![no_std]` crate that doesn't include an allocator. How much size was removed from the .wasm by completely removing the allocator dependency?
