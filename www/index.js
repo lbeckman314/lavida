@@ -42,38 +42,33 @@ themeSelect.addEventListener('change', event => {
     drawCells();
 });
 
-let con = 1;
-
 if (ctx === null) {
     alert("unable to initialize WebGL.");
 }
 
 let animationId = null;
 
-const isPaused = () => {
-    return animationId === null;
-};
-
 const playPauseButton = document.getElementById("play-pause");
 const pre = document.getElementById("pre");
 
 
 const play = () => {
-    con = 1;
     playPauseButton.textContent = "⏸";
     renderLoop();
+    run = true;
 }
 
 const pause = () => {
     playPauseButton.textContent = "▶";
     cancelAnimationFrame(animationId);
     animationId = null;
-    con = 0;
+    run = false;
 }
 
+let run = true
+
 playPauseButton.addEventListener("click", event => {
-    console.log('isPaused():', isPaused());
-    if (isPaused()) {
+    if (run == false) {
         play();
     } else {
         pause();
@@ -84,7 +79,6 @@ const resetButton = document.getElementById("reset");
 
 resetButton.addEventListener("click", event => {
     universe.reset();
-    //universe = Universe.new();
     drawGrid();
     drawCells();
 })
@@ -171,12 +165,12 @@ function sleep(ms) {
 
 
 const wait = async () => {
-    animationId = null;
-    if (con == 1) {
+    //animationId = null;
+    if (run == true) {
         setTimeout(renderLoop, DELAY);
     }
     else {
-        while(con == 0) {
+        while(run == false) {
             await sleep(100);
         }
         renderLoop();
